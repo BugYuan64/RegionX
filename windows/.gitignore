@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+shots/
+tools/*.log
+publish/
+
+# 便携模式的本地数据（数据库、截图、模型配置副本）
+data/

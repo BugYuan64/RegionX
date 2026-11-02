@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9C6A8678-8D1B-4F61-8072-2E5F2065EA25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenAssistant.Core", "src\ScreenAssistant.Core\ScreenAssistant.Core.csproj", "{82106428-79C0-4BE9-A8CD-82D835935F15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenAssistant.Llm", "src\ScreenAssistant.Llm\ScreenAssistant.Llm.csproj", "{36318A40-30D1-429D-8656-9D32045B8FE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenAssistant.Data", "src\ScreenAssistant.Data\ScreenAssistant.Data.csproj", "{BEB8B89B-A33F-48E7-93BF-F031082AF416}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenAssistant.Platform", "src\ScreenAssistant.Platform\ScreenAssistant.Platform.csproj", "{EC7B392D-4601-4C3D-9AC5-0DFC37377018}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenAssistant.App", "src\ScreenAssistant.App\ScreenAssistant.App.csproj", "{4AC359DC-7937-4244-A320-2FC38B08FBB9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5B466F68-5D52-44D8-B36B-FDB863018F57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenAssistant.Tests", "tests\ScreenAssistant.Tests\ScreenAssistant.Tests.csproj", "{3636808E-BC17-40DA-8488-F7A8876A5BF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{82106428-79C0-4BE9-A8CD-82D835935F15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82106428-79C0-4BE9-A8CD-82D835935F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82106428-79C0-4BE9-A8CD-82D835935F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82106428-79C0-4BE9-A8CD-82D835935F15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36318A40-30D1-429D-8656-9D32045B8FE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36318A40-30D1-429D-8656-9D32045B8FE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36318A40-30D1-429D-8656-9D32045B8FE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36318A40-30D1-429D-8656-9D32045B8FE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEB8B89B-A33F-48E7-93BF-F031082AF416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEB8B89B-A33F-48E7-93BF-F031082AF416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEB8B89B-A33F-48E7-93BF-F031082AF416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEB8B89B-A33F-48E7-93BF-F031082AF416}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC7B392D-4601-4C3D-9AC5-0DFC37377018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC7B392D-4601-4C3D-9AC5-0DFC37377018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC7B392D-4601-4C3D-9AC5-0DFC37377018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC7B392D-4601-4C3D-9AC5-0DFC37377018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AC359DC-7937-4244-A320-2FC38B08FBB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AC359DC-7937-4244-A320-2FC38B08FBB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AC359DC-7937-4244-A320-2FC38B08FBB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AC359DC-7937-4244-A320-2FC38B08FBB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3636808E-BC17-40DA-8488-F7A8876A5BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3636808E-BC17-40DA-8488-F7A8876A5BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3636808E-BC17-40DA-8488-F7A8876A5BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3636808E-BC17-40DA-8488-F7A8876A5BF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{82106428-79C0-4BE9-A8CD-82D835935F15} = {9C6A8678-8D1B-4F61-8072-2E5F2065EA25}
+		{36318A40-30D1-429D-8656-9D32045B8FE0} = {9C6A8678-8D1B-4F61-8072-2E5F2065EA25}
+		{BEB8B89B-A33F-48E7-93BF-F031082AF416} = {9C6A8678-8D1B-4F61-8072-2E5F2065EA25}
+		{EC7B392D-4601-4C3D-9AC5-0DFC37377018} = {9C6A8678-8D1B-4F61-8072-2E5F2065EA25}
+		{4AC359DC-7937-4244-A320-2FC38B08FBB9} = {9C6A8678-8D1B-4F61-8072-2E5F2065EA25}
+		{3636808E-BC17-40DA-8488-F7A8876A5BF5} = {5B466F68-5D52-44D8-B36B-FDB863018F57}
+	EndGlobalSection
+EndGlobal

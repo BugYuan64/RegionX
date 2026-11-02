@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 9+ 默认禁止明文 HTTP。模型的 Base URL 允许填写局域网 / 自建网关的 http 地址
+    （例如自建的 LLM Gateway），因此放开明文传输；这是用户自己的选择，
+    默认值仍然是 https 的官方接口。
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

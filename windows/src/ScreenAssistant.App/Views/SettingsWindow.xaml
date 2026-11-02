@@ -1,0 +1,485 @@
+﻿<Window x:Class="ScreenAssistant.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:ScreenAssistant.App.Controls"
+        xmlns:vm="clr-namespace:ScreenAssistant.App.ViewModels"
+        Title="设置"
+        Width="960" Height="720"
+        MinWidth="760" MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        FontFamily="{StaticResource UiFont}"
+        FontSize="14"
+        UseLayoutRounding="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="6"
+                      GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <!-- 模型名：左侧品牌图标 + 文字（透明底，避免出现白色方块） -->
+        <DataTemplate x:Key="ModelChoiceTemplate">
+            <StackPanel Orientation="Horizontal" Background="Transparent">
+                <Viewbox Width="16" Height="16" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center">
+                    <Path Data="{Binding Converter={StaticResource BrandIcon}}"
+                          Style="{StaticResource BrandIconStyle}" />
+                </Viewbox>
+                <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+            </StackPanel>
+        </DataTemplate>
+
+        <Style x:Key="FieldBox" TargetType="TextBox" BasedOn="{StaticResource BaseTextBox}">
+            <Setter Property="Margin" Value="0,0,0,14" />
+        </Style>
+
+        <Style x:Key="TabItemStyle" TargetType="TabItem">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Root" Background="Transparent" Padding="14,8" Margin="0,0,4,0"
+                                CornerRadius="8">
+                            <ContentPresenter ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- 标题栏 -->
+        <Grid Grid.Row="0" Background="{DynamicResource TitleBarBrush}"
+              MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                <c:Icon Data="{StaticResource IconScan}" Size="18" Foreground="{DynamicResource AccentBrush}" />
+                <TextBlock Text="设置" FontSize="13" Margin="10,0,0,0"
+                           VerticalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button Style="{StaticResource TitleBarButton}" Click="Close_Click" ToolTip="关闭">
+                    <c:Icon Data="{StaticResource IconWindowClose}" Size="12" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- 说明 -->
+        <Border Grid.Row="1" Padding="24,16,24,0">
+            <StackPanel>
+                <TextBlock Text="设置" Style="{StaticResource PageTitleText}" />
+                <TextBlock Text="截图内容只会发送到你在下方选择的模型服务商。" Style="{StaticResource SecondaryText}"
+                           Margin="0,4,0,0" />
+            </StackPanel>
+        </Border>
+
+        <TabControl Grid.Row="2" Margin="24,16,24,0" Background="Transparent" BorderThickness="0"
+                    ItemContainerStyle="{StaticResource TabItemStyle}">
+            <!-- 模型 -->
+            <TabItem Header="模型">
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource Card}" Padding="8">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <ListBox Grid.Row="0" ItemsSource="{Binding Models}"
+                                     SelectedItem="{Binding SelectedModel}"
+                                     BorderThickness="0" Background="Transparent"
+                                     HorizontalContentAlignment="Stretch">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Margin" Value="0,0,0,4" />
+                                        <Setter Property="Cursor" Value="Hand" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border x:Name="Root" CornerRadius="8" Background="Transparent"
+                                                            Padding="10,8">
+                                                        <ContentPresenter />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Root" Property="Background"
+                                                                    Value="{DynamicResource SurfaceHoverBrush}" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="Root" Property="Background"
+                                                                    Value="{DynamicResource SurfaceAltBrush}" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       TextTrimming="CharacterEllipsis" Margin="0,2,0,0">
+                                                <Run Text="{Binding Provider, Converter={StaticResource EnumToText}, Mode=OneWay}" />
+                                                <Run Text=" · " />
+                                                <Run Text="{Binding ModelName, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0">
+                                <Button Content="新增" Style="{StaticResource BaseButton}"
+                                        Command="{Binding AddModelCommand}" Margin="0,0,6,0" />
+                                <Button Content="删除" Style="{StaticResource DangerButton}"
+                                        Command="{Binding DeleteModelCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <ScrollViewer Grid.Column="1" Style="{StaticResource ThinScrollViewer}" Margin="14,0,0,0">
+                        <Border Style="{StaticResource Card}" Padding="18">
+                            <Grid>
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16,60">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedModel}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <c:Icon Data="{StaticResource IconCheck}" Size="28" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="选择配置或新增模型" Margin="0,12,0,6" TextAlignment="Center"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" />
+                                <TextBlock Text="保存后会清空编辑区，已保存的配置仍在左侧列表。" TextWrapping="Wrap" TextAlignment="Center"
+                                           MaxWidth="320" Style="{StaticResource SecondaryText}" />
+                            </StackPanel>
+                            <StackPanel DataContext="{Binding SelectedModel}"
+                                        Visibility="{Binding Converter={StaticResource NullToVisibility}}">
+                                <TextBlock Text="配置名称" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource FieldBox}" />
+
+                                <TextBlock Text="接口类型" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding DataContext.ProviderOptions, RelativeSource={RelativeSource AncestorType=Window}}"
+                                          SelectedValue="{Binding Provider}" SelectedValuePath="Value"
+                                          DisplayMemberPath="Label" Style="{StaticResource BaseComboBox}"
+                                          Margin="0,0,0,14" />
+
+                                <TextBlock Text="Base URL" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource FieldBox}"
+                                         ToolTip="OpenAI 兼容：https://api.openai.com/v1；Claude / Gemini 可留空使用官方地址" />
+
+                                <TextBlock Text="API Key（DPAPI 加密保存，不写日志）" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource FieldBox}" />
+
+                                <!-- 模型名：可直接手填，也可以从上游列表里选 -->
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="模型名" Style="{StaticResource FieldLabel}" />
+                                    <Button Grid.Column="1" Content="拉取模型列表" Style="{StaticResource SubtleButton}"
+                                            FontSize="12" Padding="8,2" Margin="0,0,0,4"
+                                            Command="{Binding LoadModelsCommand}" />
+                                </Grid>
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <!-- 模型名：直接输入；也可点右侧按钮从上游列表里挑 -->
+                                    <TextBox Grid.Column="0"
+                                             Text="{Binding ModelName, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource BaseTextBox}" />
+                                    <Button Grid.Column="1" Content="选择"
+                                            Style="{StaticResource BaseButton}" Margin="8,0,0,0"
+                                            MinWidth="64"
+                                            Click="PickModel_Click"
+                                            ToolTip="从拉取到的上游模型列表中选择" />
+                                </Grid>
+                                <TextBlock Text="{Binding ModelListError}" FontSize="11" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource WarningBrush}" Margin="0,0,0,10"
+                                           Visibility="{Binding ModelListError, Converter={StaticResource NullToVisibility}}" />
+                                <TextBlock Text="模型名可直接填写；填好 Base URL 与 API Key 后点「拉取模型列表」，还能从上游列表里选。"
+                                           FontSize="11" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,12" />
+
+                                <CheckBox Content="该模型支持图片输入" Style="{StaticResource CheckBoxStyle}"
+                                          IsChecked="{Binding SupportsImages}" Margin="0,0,0,14" />
+
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="温度（可空）" Style="{StaticResource FieldLabel}" />
+                                        <TextBox Text="{Binding Temperature, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource BaseTextBox}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Max Tokens（可空）" Style="{StaticResource FieldLabel}" />
+                                        <TextBox Text="{Binding MaxTokens, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource BaseTextBox}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <TextBlock Text="自定义请求头（每行 Name: Value，可空）" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding ExtraHeaders, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource BaseTextBox}"
+                                         AcceptsReturn="True" TextWrapping="Wrap"
+                                         MinHeight="56" MaxHeight="120" VerticalContentAlignment="Top"
+                                         VerticalScrollBarVisibility="Auto" Margin="0,0,0,16" />
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="保存此模型" Style="{StaticResource PrimaryButton}"
+                                            Command="{Binding DataContext.SaveModelCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                    <Button Content="设为当前模型" Style="{StaticResource BaseButton}" Margin="8,0,0,0"
+                                            Command="{Binding DataContext.SetActiveModelCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                </StackPanel>
+                            </StackPanel>
+                            </Grid>
+                        </Border>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <!-- 提示词 -->
+            <TabItem Header="提示词">
+                <ScrollViewer Style="{StaticResource ThinScrollViewer}" Margin="0,12,0,0">
+                    <Border Style="{StaticResource Card}" Padding="18">
+                        <StackPanel>
+                            <TextBlock Text="回答（第一行答案，换行后解释）" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding AnswerPrompt, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource BaseTextBox}" AcceptsReturn="True" TextWrapping="Wrap"
+                                     MinHeight="84" VerticalContentAlignment="Top" Margin="0,0,0,14" />
+
+                            <TextBlock Text="翻译（第一行译文，之后逐词解释）" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding TranslatePrompt, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource BaseTextBox}" AcceptsReturn="True" TextWrapping="Wrap"
+                                     MinHeight="72" VerticalContentAlignment="Top" Margin="0,0,0,10" />
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                <TextBlock Text="目标语言：" VerticalAlignment="Center"
+                                           Style="{StaticResource SecondaryText}" />
+                                <TextBox Text="{Binding TranslateTargetLanguage, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource BaseTextBox}" Width="180" Margin="6,0,0,0" />
+                            </StackPanel>
+
+                            <TextBlock Text="提取图文（只输出内容）" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding ExtractPrompt, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource BaseTextBox}" AcceptsReturn="True" TextWrapping="Wrap"
+                                     MinHeight="64" VerticalContentAlignment="Top" Margin="0,0,0,14" />
+
+                            <TextBlock Text="追问" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding FollowUpPrompt, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource BaseTextBox}" AcceptsReturn="True" TextWrapping="Wrap"
+                                     MinHeight="52" VerticalContentAlignment="Top" Margin="0,0,0,10" />
+                            <CheckBox Content="追问时把原截图一起发给模型" Style="{StaticResource CheckBoxStyle}"
+                                      IsChecked="{Binding IncludeImageOnFollowUp}" />
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- 外观 -->
+            <TabItem Header="外观">
+                <ScrollViewer Style="{StaticResource ThinScrollViewer}" Margin="0,12,0,0">
+                    <Border Style="{StaticResource Card}" Padding="18">
+                        <StackPanel>
+                            <TextBlock Text="主题" Style="{StaticResource FieldLabel}" />
+                            <TextBlock Text="切换后立即生效，并记住选择。"
+                                       FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,10" />
+
+                            <ItemsControl ItemsSource="{Binding Themes}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:ThemeOption}">
+                                        <Button Margin="0,0,12,12" Padding="0" Cursor="Hand" BorderThickness="0"
+                                                Command="{Binding DataContext.SelectThemeCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}"
+                                                AutomationProperties.Name="{Binding DisplayName}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Root" Width="200" CornerRadius="10"
+                                                            BorderThickness="2" Padding="12"
+                                                            Background="{DynamicResource SurfaceBrush}"
+                                                            BorderBrush="{DynamicResource BorderBrush}">
+                                                        <StackPanel>
+                                                            <Border Height="52" CornerRadius="6" ClipToBounds="True"
+                                                                    Background="{Binding PreviewBackground}">
+                                                                <StackPanel Orientation="Horizontal"
+                                                                            VerticalAlignment="Center" Margin="12,0">
+                                                                    <Border Width="34" Height="20" CornerRadius="4"
+                                                                            Background="{Binding PreviewAccent}" />
+                                                                    <Border Width="70" Height="8" CornerRadius="4"
+                                                                            Margin="10,0,0,0" VerticalAlignment="Center"
+                                                                            Background="{Binding PreviewText}" />
+                                                                </StackPanel>
+                                                            </Border>
+                                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                                <TextBlock Text="{Binding DisplayName}" FontSize="13"
+                                                                           FontWeight="SemiBold"
+                                                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                                <c:Icon Data="{StaticResource IconCheck}" Size="14"
+                                                                        Margin="8,0,0,0"
+                                                                        Foreground="{DynamicResource AccentBrush}"
+                                                                        Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter TargetName="Root" Property="BorderBrush"
+                                                                    Value="{DynamicResource AccentBrush}" />
+                                                        </DataTrigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Root" Property="BorderBrush"
+                                                                    Value="{DynamicResource BorderStrongBrush}" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- 高级 -->
+            <TabItem Header="高级">
+                <ScrollViewer Style="{StaticResource ThinScrollViewer}" Margin="0,12,0,0">
+                    <Border Style="{StaticResource Card}" Padding="18">
+                        <StackPanel>
+                            <TextBlock Text="HTTP 代理（如 http://127.0.0.1:7890，留空直连）"
+                                       Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding ProxyUrl, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FieldBox}" />
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="并发任务数（1-5）" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding MaxConcurrency, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource BaseTextBox}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="请求超时（秒）" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding TimeoutSeconds, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource BaseTextBox}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="截图前延迟（毫秒）" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding CaptureDelayMs, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource BaseTextBox}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- 底部 -->
+        <Border Grid.Row="3" Padding="24,12,24,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="0,0,12,0">
+                    <Border Padding="10,8" CornerRadius="6" Margin="0,0,0,6">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding StatusMessage}" Value="">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryText}">
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsStatusError}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Border>
+                    <TextBlock Text="{Binding ConfigurationDirectory, StringFormat=配置目录：{0}}"
+                               ToolTip="{Binding ConfigurationDirectory}" FontSize="11"
+                               TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextTertiaryBrush}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="保存设置" Style="{StaticResource PrimaryButton}"
+                            Command="{Binding SaveSettingsCommand}" Margin="0,0,8,0" MinWidth="100" />
+                    <Button Content="关闭" Style="{StaticResource BaseButton}"
+                            Command="{Binding CloseCommand}" MinWidth="76" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,66 @@
+﻿<!--
+    白色主题（蓝色强调）。
+    令牌与 DarkTheme.xaml 一一对应，只换颜色值。
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 强调色 -->
+    <Color x:Key="AccentColor">#2F6FED</Color>
+    <SolidColorBrush x:Key="AccentBrush" Color="#2F6FED" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#4C84F2" />
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="#255BC7" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#E8F0FE" />
+    <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextOnAccentBrush" Color="#FFFFFF" />
+
+    <!-- 背景与表面 -->
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F7F8FA" />
+    <SolidColorBrush x:Key="TitleBarBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceAltBrush" Color="#F1F3F6" />
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#E9EDF3" />
+    <SolidColorBrush x:Key="SurfaceHoverStrongBrush" Color="#EDF1F6" />
+    <SolidColorBrush x:Key="SurfacePressedBrush" Color="#DCE2EA" />
+    <SolidColorBrush x:Key="PanelBrush" Color="#FFFFFF" />
+
+    <!-- 描边 -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#D8DDE5" />
+    <SolidColorBrush x:Key="BorderSoftBrush" Color="#E6EAF0" />
+    <SolidColorBrush x:Key="BorderStrongBrush" Color="#B9C1CD" />
+    <SolidColorBrush x:Key="ScrollThumbBrush" Color="#C4CBD6" />
+
+    <!-- 文字 -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1B1F27" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5A6270" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#8A929E" />
+
+    <!-- 语义色 -->
+    <SolidColorBrush x:Key="SuccessBrush" Color="#1F9D55" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#C77700" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#D93838" />
+    <SolidColorBrush x:Key="PendingBrush" Color="#8A929E" />
+    <SolidColorBrush x:Key="SuccessSoftBrush" Color="#E7F6EE" />
+    <SolidColorBrush x:Key="WarningSoftBrush" Color="#FDF3E2" />
+    <SolidColorBrush x:Key="DangerSoftBrush" Color="#FDEBEB" />
+
+    <!-- 识别框四角手柄填充 -->
+    <SolidColorBrush x:Key="HandleFillBrush" Color="#EAF1FF" />
+
+    <!-- 识别框拖动/缩放的透明命中区（alpha≈0，只用于接收鼠标，不参与视觉） -->
+    <SolidColorBrush x:Key="HitTestBrush" Color="#013B6EF6" />
+
+    <!-- 底部渐隐遮罩用色 -->
+    <Color x:Key="WindowBackgroundSolidColor">#FFF7F8FA</Color>
+    <Color x:Key="WindowBackgroundFadeColor">#00F7F8FA</Color>
+
+    <!-- 截图预览 -->
+    <SolidColorBrush x:Key="PaperBrush" Color="#F2EFE8" />
+    <SolidColorBrush x:Key="PaperTextBrush" Color="#1F1F1F" />
+
+    <!-- 识别框遮罩与提示：白色主题下仍用浅色半透明，保证叠在任意内容上都可读 -->
+    <SolidColorBrush x:Key="ChromeBrush" Color="#F2FFFFFF" />
+    <SolidColorBrush x:Key="ChromeBorderBrush" Color="#D8DDE5" />
+    <SolidColorBrush x:Key="ChromeTextBrush" Color="#1B1F27" />
+
+</ResourceDictionary>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RegionX</string>
+    <string name="service_channel_name">截图问答服务</string>
+    <string name="service_channel_description">保持截图会话与悬浮球运行</string>
+    <string name="service_notification_title">RegionX 截图问答运行中</string>
+</resources>

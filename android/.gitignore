@@ -1,0 +1,14 @@
+# 构建中间产物
+build/
+.gradle/
+.kotlin/
+local.properties
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 签名文件不入库
+*.jks
+*.keystore

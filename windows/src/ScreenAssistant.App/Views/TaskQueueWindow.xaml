@@ -1,0 +1,293 @@
+﻿<Window x:Class="ScreenAssistant.App.Views.TaskQueueWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ScreenAssistant.App.ViewModels"
+        xmlns:views="clr-namespace:ScreenAssistant.App.Views"
+        xmlns:c="clr-namespace:ScreenAssistant.App.Controls"
+        Title="任务队列"
+        Width="304" Height="440"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        FontFamily="{StaticResource UiFont}"
+        UseLayoutRounding="True">
+
+    <Window.Resources>
+        <!-- 任务卡片 -->
+        <DataTemplate x:Key="QueueTaskTemplate" DataType="{x:Type vm:TaskItemViewModel}">
+            <Border x:Name="Card" Background="{DynamicResource SurfaceAltBrush}"
+                    BorderBrush="Transparent" BorderThickness="1"
+                    CornerRadius="8" Padding="8,7" Margin="0,0,0,6">
+                <StackPanel>
+                    <!-- 标题行 -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
+                            <Run Text="{Binding KindText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Title, Mode=OneWay}" />
+                        </TextBlock>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock x:Name="CreatedTime" Text="{Binding CreatedTime, Mode=OneWay}"
+                                       FontSize="10" Margin="8,0,8,0" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextTertiaryBrush}"
+                                       ToolTip="{Binding CreatedTimeTooltip, Mode=OneWay}" />
+                            <Ellipse Style="{StaticResource StatusDot}"
+                                     Fill="{Binding Status, Converter={StaticResource StateToBrush}}" />
+                            <TextBlock Text="{Binding Status, Converter={StaticResource StateToText}}" FontSize="11"
+                                       Margin="5,0,0,0"
+                                       Foreground="{Binding Status, Converter={StaticResource StateToBrush}}" />
+                            <!-- 完成后才出现的展开箭头 -->
+                            <Button x:Name="ExpandButton" Style="{StaticResource SubtleButton}"
+                                    Width="22" Height="22" Padding="0" Margin="6,0,0,0"
+                                    Command="{Binding ToggleExpandCommand}"
+                                    AutomationProperties.Name="展开回答"
+                                    Visibility="{Binding HasResultLine, Converter={StaticResource BoolToVisibility}}"
+                                    ToolTip="展开完整回答">
+                                <c:Icon Data="{StaticResource IconChevronDown}" Size="12">
+                                    <c:Icon.Style>
+                                        <Style TargetType="c:Icon" BasedOn="{StaticResource {x:Type c:Icon}}">
+                                            <Setter Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="0" CenterX="6" CenterY="6" />
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                                    <Setter Property="RenderTransform">
+                                                        <Setter.Value>
+                                                            <RotateTransform Angle="180" CenterX="6" CenterY="6" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </c:Icon.Style>
+                                </c:Icon>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- 一行回答（完成后）/ 流式文本（处理中） -->
+                    <TextBlock x:Name="ResultLine" Text="{Binding ResultLine}" FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextTrimming="CharacterEllipsis" Margin="0,4,0,0"
+                               TextWrapping="NoWrap"
+                               Visibility="Collapsed" />
+
+                    <!-- 操作按钮只占用一行；收起时不额外撑高卡片 -->
+                    <Grid Margin="0,2,0,0" MinHeight="24">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CanRetry}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="取消" Style="{StaticResource SubtleButton}" FontSize="11"
+                                    Command="{Binding CancelCommand}"
+                                    Visibility="{Binding CanCancel, Converter={StaticResource BoolToVisibility}}" />
+                            <Button Content="重试" Style="{StaticResource SubtleButton}" FontSize="11"
+                                    Command="{Binding RetryCommand}"
+                                    Visibility="{Binding CanRetry, Converter={StaticResource BoolToVisibility}}" />
+                            <Button Style="{StaticResource SubtleButton}" Padding="6,2" FontSize="11"
+                                    Command="{Binding DeleteCommand}" ToolTip="删除任务">
+                                <c:Icon Data="{StaticResource IconTrash}" Size="13" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- 展开区：完整回答 + 追问，最大高度受限（内容超出时内部滚动） -->
+                    <Border x:Name="ExpandPanel" Margin="0,6,0,0" Visibility="Collapsed">
+                        <DockPanel LastChildFill="True">
+                            <!-- 追问输入固定在底部，避免与滚动区域互相测量 -->
+                            <Grid DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                        CornerRadius="8" Padding="8,0">
+                                    <!-- 单行追问框：用 TextBox 但不放在可滚动区域内 -->
+                                    <!-- 可输入的追问框：独立于滚动区域，避免被滚动内容压扁导致无法输入 -->
+                                    <TextBox x:Name="QueueFollowUpBox"
+                                             Text="{Binding FollowUpText, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0" Background="Transparent" FontSize="12"
+                                             Foreground="{DynamicResource TextPrimaryBrush}"
+                                             CaretBrush="{DynamicResource AccentBrush}"
+                                             MinHeight="28" VerticalContentAlignment="Center"
+                                             IsReadOnly="False"
+                                             IsTabStop="True"
+                                             IsEnabled="{Binding IsFollowingUp, Converter={StaticResource InverseBool}}"
+                                             KeyDown="FollowUpBox_KeyDown" />
+                                </Border>
+                                <Button Grid.Column="1" Width="30" Height="30" Margin="6,0,0,0"
+                                        Padding="0"
+                                        AutomationProperties.Name="发送追问" ToolTip="发送追问">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                            <Setter Property="Command" Value="{Binding SendFollowUpCommand}" />
+                                            <Setter Property="IsEnabled" Value="{Binding CanSendFollowUp}" />
+                                            <Setter Property="ToolTip" Value="发送追问" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsFollowingUp}" Value="True">
+                                                    <Setter Property="Command" Value="{Binding StopFollowUpCommand}" />
+                                                    <Setter Property="IsEnabled" Value="True" />
+                                                    <Setter Property="ToolTip" Value="停止生成" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <c:Icon Data="{StaticResource IconSend}" Size="14" Thickness="2.4"
+                                            Foreground="{DynamicResource OnAccentBrush}">
+                                        <c:Icon.Style>
+                                            <Style TargetType="c:Icon" BasedOn="{StaticResource {x:Type c:Icon}}">
+                                                <Setter Property="Data" Value="{StaticResource IconSend}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsFollowingUp}" Value="True">
+                                                        <Setter Property="Data" Value="{StaticResource IconClose}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </c:Icon.Style>
+                                    </c:Icon>
+                                </Button>
+                            </Grid>
+
+                            <!-- 可滚动的对话区 -->
+                            <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled" PanningMode="VerticalOnly">
+                                <StackPanel>
+                                    <TextBlock Text="正在加载…" Style="{StaticResource CaptionText}"
+                                               Visibility="{Binding IsLoadingDetail, Converter={StaticResource BoolToVisibility}}" />
+                                    <!-- 完整回答 -->
+                                    <TextBlock Text="{Binding FullAnswer}" TextWrapping="Wrap" FontSize="12"
+                                               LineHeight="20" Foreground="{DynamicResource TextPrimaryBrush}"
+                                               Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding FollowUpMessages}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type vm:MessageItemViewModel}">
+                                                <Grid Margin="0,0,0,8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="5*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border x:Name="Bubble" Grid.Column="1" HorizontalAlignment="Right"
+                                                            Background="{DynamicResource SurfaceBrush}" CornerRadius="12,12,4,12"
+                                                            Padding="10,6" Visibility="Collapsed">
+                                                        <TextBlock Text="{Binding Content}" TextWrapping="Wrap" FontSize="12"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                    </Border>
+                                                    <TextBlock x:Name="Reply" Grid.ColumnSpan="2" Text="{Binding Content}"
+                                                               TextWrapping="Wrap" FontSize="12" LineHeight="20"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                </Grid>
+                                                <DataTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding IsUser}" Value="True">
+                                                        <Setter TargetName="Bubble" Property="Visibility" Value="Visible" />
+                                                        <Setter TargetName="Reply" Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </DataTemplate.Triggers>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Border>
+
+                    <TextBlock Text="{Binding Error}" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Foreground="{DynamicResource DangerBrush}"
+                               Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </Border>
+
+            <DataTemplate.Triggers>
+                <!-- 处理中：琥珀色描边 -->
+                <DataTrigger Binding="{Binding Status}" Value="Running">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="ResultLine" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="ResultLine" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                </DataTrigger>
+                <!-- 已完成 / 已取消 / 失败：显示回答首行 -->
+                <DataTrigger Binding="{Binding Status}" Value="Completed">
+                    <Setter TargetName="ResultLine" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Cancelled">
+                    <Setter TargetName="ResultLine" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Failed">
+                    <Setter TargetName="ResultLine" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                    <Setter TargetName="ExpandPanel" Property="Visibility" Value="Visible" />
+                    <!-- 展开后正文里已有完整回答，隐藏重复的首行 -->
+                    <Setter TargetName="ResultLine" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Border Background="{DynamicResource PanelBrush}" CornerRadius="12"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="8" Opacity="0.28" Direction="270" />
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- 标题：会话时间 + 任务数 -->
+            <Grid Grid.Row="0" Margin="4,2,4,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding SessionName}" FontSize="13" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center">
+                    <Run Text="任务 " /><Run Text="{Binding Tasks.Count, Mode=OneWay}" />
+                </TextBlock>
+            </Grid>
+
+            <!-- 列表 -->
+            <ScrollViewer Grid.Row="1" Style="{StaticResource ThinScrollViewer}"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="0,0,2,0">
+                    <TextBlock Text="还没有任务。点击工具栏「问答 / 翻译 / 提取图文」开始。"
+                               Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="4,8,4,0"
+                               Visibility="{Binding Tasks.Count, Converter={StaticResource CountToVisibility}, ConverterParameter=invert}" />
+                    <ItemsControl ItemsSource="{Binding Tasks}" ItemTemplate="{StaticResource QueueTaskTemplate}" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 状态提示 -->
+            <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" Style="{StaticResource CaptionText}"
+                       TextWrapping="Wrap" Margin="4,6,4,0"
+                       Visibility="{Binding StatusMessage, Converter={StaticResource NullToVisibility}}" />
+        </Grid>
+    </Border>
+</Window>

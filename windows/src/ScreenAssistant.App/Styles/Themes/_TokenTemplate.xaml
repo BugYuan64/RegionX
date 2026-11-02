@@ -1,0 +1,8 @@
+﻿<!--
+    主题颜色令牌（唯一的颜色定义处）。
+    每个主题只需提供这一份语义化令牌，界面代码不写死任何颜色。
+    新增主题：复制 DarkTokens.xaml → 改颜色 → 在 ThemeCatalog 里注册。
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+</ResourceDictionary>

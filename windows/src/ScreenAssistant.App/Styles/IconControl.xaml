@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:ScreenAssistant.App.Controls">
+
+    <Style TargetType="{x:Type controls:Icon}">
+        <Setter Property="Width" Value="{Binding Size, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Height" Value="{Binding Size, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:Icon}">
+                    <Viewbox Stretch="Uniform">
+                        <Path x:Name="Shape"
+                              Data="{TemplateBinding Data}"
+                              Stroke="{TemplateBinding Foreground}"
+                              StrokeThickness="{TemplateBinding Thickness}"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"
+                              StrokeLineJoin="Round"
+                              Fill="Transparent" />
+                    </Viewbox>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="FillIcon" Value="True">
+                            <Setter TargetName="Shape" Property="Fill"
+                                    Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

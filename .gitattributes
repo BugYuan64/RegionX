@@ -1,0 +1,38 @@
+# Normalize text in the repository and use LF by default on checkout.
+* text=auto eol=lf
+
+# Windows command scripts and Visual Studio solution files.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.sln text eol=crlf
+
+# Keep Unix scripts executable-compatible with LF line endings.
+*.sh text eol=lf
+gradlew text eol=lf
+
+# Source assets and documents that must remain byte-for-byte binary.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.bmp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+*.docx binary
+*.pptx binary
+*.xlsx binary
+*.zip binary
+*.7z binary
+*.gz binary
+*.jar binary
+*.dll binary
+*.exe binary
+*.pdb binary
+*.apk binary
+*.aab binary
